@@ -15,7 +15,7 @@ class Splash extends StatefulWidget {
 class _SplashState extends State<Splash> {
   @override
   void initState() {
-    Timer(Duration(seconds: 3), () {
+    Timer(Duration(seconds: 4), () {
       FirebaseAuth.instance.authStateChanges().listen((User user) {
         if (user == null) {
           Navigator.pushReplacement(
