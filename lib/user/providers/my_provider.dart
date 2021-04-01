@@ -145,25 +145,27 @@ class MyProvider extends ChangeNotifier {
   List<String> newcartIDsList = [];
   List<int> cartQuantityList = [];
   List<int> newcartQuantityList = [];
-  getCartItemsIDs() {
+  List<String> getCartItemsIDs() {
     for (int i; i < cartList.length; i++) {
-      newcartIDsList.add(cartList[i].getid);
+      newcartIDsList[i] = cartList[i].id;
       // cartIDsList = newcartIDsList;
     }
-    notifyListeners();
+    return newcartIDsList;
   }
 
-  getQuantity() {
+  List<int> getQuantity() {
     for (int i; i < cartList.length; i++) {
-      newcartQuantityList.add(cartList[i].getquantity);
-      cartQuantityList = newcartQuantityList;
+      newcartQuantityList[i] = cartList[i].quantity;
+      // cartQuantityList = newcartQuantityList;
     }
-    notifyListeners();
+    return newcartQuantityList;
   }
 
   //////////////////////////Add to db///////////////////////////////////////////////
 
   void addt(int total, DateTime datetime) {
+    cartIDsList = getCartItemsIDs();
+    cartQuantityList = getQuantity();
     try {
       db.collection('myOrder').doc().set({
         'orderby': UserId,
@@ -186,6 +188,8 @@ class MyProvider extends ChangeNotifier {
 ///////////////////////////kitchen data//////////////////////////////////////////////
 
   void addkt(int total, DateTime datetime) {
+    cartIDsList = getCartItemsIDs();
+    cartQuantityList = getQuantity();
     try {
       db.collection('kitchen').doc().set({
         'orderby': UserId,
@@ -203,6 +207,8 @@ class MyProvider extends ChangeNotifier {
     cartQuantityList.clear();
     cartList.clear();
     newCartList.clear();
+    newcartQuantityList.clear();
+    newcartIDsList.clear();
   }
 
   ////////////user id//////////////////////////////////////////

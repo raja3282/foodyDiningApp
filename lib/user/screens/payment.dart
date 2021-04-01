@@ -2,10 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:foody/user/constant/const.dart';
-import 'file:///C:/Users/Cv/AndroidStudioProjects/foody/lib/user/providers/my_provider.dart';
-import 'file:///C:/Users/Cv/AndroidStudioProjects/foody/lib/user/helper/screen_navigation.dart';
+import 'package:foody/user/helper/screen_navigation.dart';
+import 'package:foody/user/providers/my_provider.dart';
 import 'package:foody/user/screens/menu.dart';
 import 'package:foody/user/screens/thankuPage.dart';
+import 'package:provider/provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 class Payment extends StatefulWidget {
@@ -27,6 +28,7 @@ class _PaymentState extends State<Payment> {
 
   @override
   Widget build(BuildContext context) {
+    MyProvider provider = Provider.of<MyProvider>(context);
     return SafeArea(
       child: Scaffold(
         bottomNavigationBar: btnPressed == true
@@ -167,7 +169,7 @@ class _PaymentState extends State<Payment> {
                                       if (formkey.currentState.validate()) {
                                         setState(() {
                                           method = 'EasyPaisa';
-                                          MyProvider().addpayment(
+                                          provider.addpayment(
                                               widget.payment,
                                               widget.doc,
                                               method,
@@ -249,7 +251,7 @@ class _PaymentState extends State<Payment> {
                                         if (formkey.currentState.validate()) {
                                           setState(() {
                                             method = 'jazzCash';
-                                            MyProvider().addpayment(
+                                            provider.addpayment(
                                                 widget.payment,
                                                 widget.doc,
                                                 method,
@@ -307,7 +309,7 @@ class _PaymentState extends State<Payment> {
                                     DialogButton(
                                       onPressed: () {
                                         method = 'by hand';
-                                        MyProvider().addpayment(
+                                        provider.addpayment(
                                             widget.payment,
                                             widget.doc,
                                             method,

@@ -23,10 +23,11 @@ class _CancelOrderState extends State<CancelOrder> {
   final db = FirebaseFirestore.instance;
   // MyProvider my = MyProvider();
   DateTime datetime = new DateTime.now();
-  final String Useremail = MyProvider().getUserMail();
+
   @override
   Widget build(BuildContext context) {
     MyProvider provider = Provider.of<MyProvider>(context);
+    final String Useremail = provider.getUserMail();
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(

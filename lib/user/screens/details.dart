@@ -173,7 +173,14 @@ class _DetailPageState extends State<DetailPage> {
                                   final snackBar = SnackBar(
                                     content:
                                         Text('${widget.name} added to Cart'),
-                                    duration: Duration(milliseconds: 650),
+                                    duration: Duration(milliseconds: 750),
+                                    action: SnackBarAction(
+                                      label: 'See Cart',
+                                      onPressed: () {
+                                        changeScreen(context, CartPage());
+                                        setState(() {});
+                                      },
+                                    ),
                                   );
 
                                   ScaffoldMessenger.of(context)

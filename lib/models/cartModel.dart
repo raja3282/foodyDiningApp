@@ -14,8 +14,8 @@ class CartModel {
     @required this.price,
     this.quantity = 1,
   });
-  get getquantity => quantity;
-  get getid => id;
+  int get getquantity => quantity;
+  String get getid => id;
 
   void incrementQuantity() {
     this.quantity = this.quantity + 1;
