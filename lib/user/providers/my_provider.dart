@@ -1,6 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:flutter/material.dart';
 import 'package:foody/models/cartModel.dart';
 import 'package:foody/models/fooditemModel.dart';
@@ -126,8 +127,6 @@ class MyProvider extends ChangeNotifier {
 
   ////////////////////cancel order/////////////////////////////////////////
   void cancelorder() {
-    cartIDsList.clear();
-    cartQuantityList.clear();
     cartList.clear();
     newCartList.clear();
     notifyListeners();
@@ -141,24 +140,25 @@ class MyProvider extends ChangeNotifier {
     }
   }
 
+///////////////////////storing ids and quantities//////////////////////////////////////
   List<String> cartIDsList = [];
   List<String> newcartIDsList = [];
   List<int> cartQuantityList = [];
   List<int> newcartQuantityList = [];
   List<String> getCartItemsIDs() {
-    for (int i; i < cartList.length; i++) {
-      newcartIDsList[i] = cartList[i].id;
-      // cartIDsList = newcartIDsList;
+    for (int i = 0; i < cartList.length; i++) {
+      newcartIDsList.add(cartList[i].id);
+      cartIDsList = newcartIDsList;
     }
-    return newcartIDsList;
+    return cartIDsList;
   }
 
   List<int> getQuantity() {
-    for (int i; i < cartList.length; i++) {
-      newcartQuantityList[i] = cartList[i].quantity;
-      // cartQuantityList = newcartQuantityList;
+    for (int i = 0; i < cartList.length; i++) {
+      newcartQuantityList.add(cartList[i].quantity);
+      cartQuantityList = newcartQuantityList;
     }
-    return newcartQuantityList;
+    return cartQuantityList;
   }
 
   //////////////////////////Add to db///////////////////////////////////////////////
@@ -179,10 +179,6 @@ class MyProvider extends ChangeNotifier {
     } catch (e) {
       print(e.toString());
     }
-    // cartIDsList.clear();
-    // cartQuantityList.clear();
-    // cartList.clear();
-    // newCartList.clear();
   }
 
 ///////////////////////////kitchen data//////////////////////////////////////////////
