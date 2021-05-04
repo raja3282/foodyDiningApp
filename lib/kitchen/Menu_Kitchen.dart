@@ -2,13 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:foody/admin/Table_Data.dart';
-import 'package:foody/admin/crud.dart';
+import 'package:foody/kitchen/Table_Data.dart';
+import 'package:foody/kitchen/crud.dart';
+import 'package:foody/models/orderModel.dart';
 
 import 'package:foody/user/helper/orderData.dart';
-import 'file:///C:/Users/Cv/AndroidStudioProjects/foody/lib/models/orderModel.dart';
-
-import 'file:///C:/Users/Cv/AndroidStudioProjects/foody/lib/user/helper/screen_navigation.dart';
+import 'package:foody/user/helper/screen_navigation.dart';
 import 'dart:async';
 
 import 'package:toast/toast.dart';

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:foody/user/constant/const.dart';
 import 'package:foody/user/login/login.dart';
 import 'package:foody/user/providers/app.dart';
+import 'package:foody/user/providers/auth.dart';
 import 'package:foody/user/providers/categoryprovider.dart';
 import 'package:foody/user/providers/my_provider.dart';
 import 'package:foody/user/screens/menu.dart';
@@ -23,6 +24,7 @@ class Foody extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => (Authentication())),
         ChangeNotifierProvider(create: (_) => (MyProvider())),
         ChangeNotifierProvider(create: (_) => (AppProvider())),
         ChangeNotifierProvider(create: (_) => (CategoryProvider.initialize()))

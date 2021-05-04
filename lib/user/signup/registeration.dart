@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:foody/user/constant/const.dart';
-import 'file:///C:/Users/Cv/AndroidStudioProjects/foody/lib/user/providers/my_provider.dart';
 import 'package:foody/user/helper/roundedButton.dart';
-import 'package:foody/user/helper/screen_navigation.dart';
+import 'package:foody/user/providers/auth.dart';
 import 'package:foody/user/screens/menu.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
 class Registration extends StatefulWidget {
@@ -13,7 +13,6 @@ class Registration extends StatefulWidget {
 }
 
 class _RegistrationState extends State<Registration> {
-  final _auth = FirebaseAuth.instance;
   bool showSpinner = false;
   String name, email;
   String password;
@@ -48,7 +47,7 @@ class _RegistrationState extends State<Registration> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 10, left: 6, right: 6),
                 child: TextFormField(
-                  keyboardType: TextInputType.emailAddress,
+                  keyboardType: TextInputType.name,
                   textAlign: TextAlign.center,
                   decoration: buildInputDecoration(Icons.person, "User Name"),
                   validator: (String value) {
@@ -94,7 +93,7 @@ class _RegistrationState extends State<Registration> {
                       return 'Password must be atleast 6 characters';
                     }
                     if (value.isEmpty) {
-                      return 'Please Enter a Password';
+                      return 'Please a Enter Password';
                     }
 
                     return null;
@@ -128,20 +127,21 @@ class _RegistrationState extends State<Registration> {
               RoundedButton(
                 title: 'SignUp',
                 color: kcolor2,
-                onPressed: () async {
+                onPressed: () {
                   setState(() {});
                   if (formkey.currentState.validate()) {
                     try {
-                      final newuser =
-                          await _auth.createUserWithEmailAndPassword(
-                              email: email, password: password.toString());
-                      MyProvider myprovider = MyProvider();
-                      myprovider.createUserRecord(
-                          newuser.user.uid, email, name);
-
-                      if (newuser != null) {
-                        changeScreenReplacement(context, Menu());
-                      }
+                      Provider.of<Authentication>(context, listen: false)
+                          .creteNewAccount(email, password.toString())
+                          .whenComplete(() {
+                        Navigator.pushReplacement(
+                            context,
+                            PageTransition(
+                                child: Menu(),
+                                type: PageTransitionType.leftToRightWithFade));
+                      });
+                      Provider.of<Authentication>(context, listen: false)
+                          .createUserRecord(email, name, password);
                     } catch (e) {
                       print(e);
                       Toast.show(e.message, context,
@@ -150,9 +150,6 @@ class _RegistrationState extends State<Registration> {
                   } else {
                     return null;
                   }
-                  // } else {
-                  //   print('asfsafsdffff');
-                  // }
                 },
               ),
             ],

@@ -21,9 +21,9 @@ dependencies:
   toast: ^0.1.5
   rflutter_alert: ^1.1.0
   page_transition: ^1.1.7+6
-  google_maps_flutter: ^2.0.1
-  geolocator: ^6.1.6
-  geocoder: ^0.2.1
+#  google_maps_flutter: ^2.0.1
+#  geolocator: ^6.1.6
+#  geocoder: ^0.2.1
   font_awesome_flutter: ^8.12.0
   eva_icons_flutter: ^2.0.1
 

@@ -132,14 +132,6 @@ class MyProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  createUserRecord(useruid, email, name) {
-    try {
-      db.collection('users').doc(useruid).set({'email': email, 'name': name});
-    } catch (e) {
-      print(e.toString());
-    }
-  }
-
 ///////////////////////storing ids and quantities//////////////////////////////////////
   List<String> cartIDsList = [];
   List<String> newcartIDsList = [];

@@ -1,14 +1,13 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:foody/admin/home.dart';
 import 'package:foody/user/constant/const.dart';
 import 'package:foody/user/helper/roundedButton.dart';
+import 'package:foody/user/helper/screen_navigation.dart';
 import 'package:foody/user/login/ForgotScreen.dart';
-
-import 'file:///C:/Users/Cv/AndroidStudioProjects/foody/lib/user/helper/screen_navigation.dart';
+import 'package:foody/user/providers/auth.dart';
 import 'package:foody/user/screens/menu.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
 class Login extends StatefulWidget {
@@ -17,10 +16,7 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  final _auth = FirebaseAuth.instance;
-  User loggedInUser;
   bool showSpinner = false;
-  String eemail;
   String email;
   String password;
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
@@ -82,7 +78,8 @@ class _LoginState extends State<Login> {
 
                       return null;
                     },
-                    decoration: buildInputDecoration(Icons.lock, "Password"),
+                    decoration:
+                        buildInputDecoration(Icons.lock, "Enter Password"),
                   ),
                 ),
                 Padding(
@@ -108,17 +105,19 @@ class _LoginState extends State<Login> {
                 RoundedButton(
                   title: 'Login',
                   color: kcolor2,
-                  onPressed: () async {
-                    setState(() {
-                      //showSpinner = true;
-                    });
+                  onPressed: () {
                     if (formkey.currentState.validate()) {
                       try {
-                        final user = await _auth.signInWithEmailAndPassword(
-                            email: email, password: password);
-                        if (user != null) {
-                          changeScreenReplacement(context, Menu());
-                        }
+                        Provider.of<Authentication>(context, listen: false)
+                            .loginIntoAccount(email, password)
+                            .whenComplete(() {
+                          Navigator.pushReplacement(
+                              context,
+                              PageTransition(
+                                  child: Menu(),
+                                  type:
+                                      PageTransitionType.leftToRightWithFade));
+                        });
                       } catch (e) {
                         print(e);
                         Toast.show(e.message, context,

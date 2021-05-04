@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:foody/models/data.dart';
+import 'package:foody/models/orderModel.dart';
+import 'package:foody/models/paymentmodel.dart';
 import 'package:foody/user/constant/const.dart';
-import 'file:///C:/Users/Cv/AndroidStudioProjects/foody/lib/models/data.dart';
 
 import 'package:foody/user/helper/orderData.dart';
-import 'file:///C:/Users/Cv/AndroidStudioProjects/foody/lib/models/orderModel.dart';
-import 'file:///C:/Users/Cv/AndroidStudioProjects/foody/lib/models/paymentmodel.dart';
 
 class TableData extends StatefulWidget {
   OrderModel orderModel;

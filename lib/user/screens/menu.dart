@@ -1,20 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:foody/admin/Employee_Profile.dart';
-import 'package:foody/admin/menu_items.dart';
-import 'package:foody/admin/showOrders.dart';
 import 'package:foody/models/fooditemModel.dart';
 import 'package:foody/user/constant/const.dart';
 import 'package:foody/user/helper/screen_navigation.dart';
 import 'package:foody/user/login/login.dart';
-import 'package:foody/user/providers/app.dart';
 import 'package:foody/user/providers/categoryprovider.dart';
 import 'package:foody/user/providers/my_provider.dart';
-
 import 'package:foody/user/screens/cart.dart';
 import 'package:foody/user/screens/featured_products.dart';
-import 'package:foody/user/welcome/welcome.dart';
 import 'package:provider/provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
@@ -69,7 +63,7 @@ class _MenuState extends State<Menu> {
               ),
               GestureDetector(
                 onTap: () {
-                  changeScreen(context, EmployeeProfile());
+                  //changeScreen(context, EmployeeProfile());
                 },
                 child: drawerItem(
                   icon: Icons.person,
@@ -78,7 +72,7 @@ class _MenuState extends State<Menu> {
               ),
               GestureDetector(
                 onTap: () {
-                  changeScreen(context, ShowOrders());
+                  //changeScreen(context, ShowOrders());
                 },
                 child: drawerItem(
                   icon: Icons.card_travel,
@@ -87,7 +81,7 @@ class _MenuState extends State<Menu> {
               ),
               GestureDetector(
                 onTap: () {
-                  changeScreen(context, Menu_Items());
+                  //changeScreen(context, Menu_Items());
                 },
                 child: drawerItem(
                   icon: Icons.fastfood,
