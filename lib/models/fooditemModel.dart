@@ -5,6 +5,7 @@ class Category {
   final String name;
   final String image;
   final int price;
+  final int comparedPrice;
   final String description;
   final double rating;
 
@@ -15,5 +16,6 @@ class Category {
     @required this.image,
     @required this.rating,
     @required this.description,
+    @required this.comparedPrice,
   });
 }

@@ -14,7 +14,7 @@ class _ThankUState extends State<ThankU> {
   void initState() {
     // TODO: implement initState
     Timer(
-        Duration(seconds: 3),
+        Duration(seconds: 2),
         () => (Navigator.pushReplacement(
             context,
             PageTransition(

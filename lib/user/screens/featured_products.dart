@@ -8,55 +8,55 @@ import 'package:foody/user/screens/details.dart';
 import 'package:provider/provider.dart';
 
 class Featured extends StatelessWidget {
-  List<Category> productsList;
+  final List<Category> productsList;
   Featured(this.productsList);
 
   @override
   Widget build(BuildContext context) {
-    // final AppProvider app = Provider.of<AppProvider>(context);
-    // if (productsList.length > 0) {
-    //   app.changeLoading();
-    // }
-
-    return
-        //app.isLoading
-        // ? Container(
-        //     color: Colors.white,
-        //     child: SpinKitFadingCircle(
-        //       color: Colors.black,
-        //       size: 30,
-        //     ))
-        ListView.builder(
+    return ListView.builder(
       physics: ScrollPhysics(),
       scrollDirection: Axis.vertical,
       itemCount: productsList?.length ?? 0,
       shrinkWrap: true,
       itemBuilder: (_, index) {
-        return Card(
-          child: ListTile(
-            contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 0),
-            leading: Image.network(
-              productsList[index].image,
-              height: 80,
-              width: 80,
+        return Container(
+          height: 113,
+          width: MediaQuery.of(context).size.width,
+          child: Card(
+            child: Center(
+              child: ListTile(
+                leading: Container(
+                  height: 90,
+                  width: 90,
+                  child: Image.network(
+                    productsList[index].image,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                title: Text(
+                  productsList[index].name,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
+                ),
+                subtitle: Text(
+                  'Rs.${productsList[index].price.toString()}',
+                  style: TextStyle(fontSize: 16),
+                ),
+                trailing: Icon(Icons.arrow_forward_ios),
+                onTap: () {
+                  changeScreen(
+                      context,
+                      DetailPage(
+                        name: productsList[index].name,
+                        image: productsList[index].image,
+                        price: productsList[index].price,
+                        productid: productsList[index].id,
+                        rating: productsList[index].rating,
+                        description: productsList[index].description,
+                        comparedPrice: productsList[index].comparedPrice,
+                      ));
+                },
+              ),
             ),
-            title: Text(
-              productsList[index].name,
-            ),
-            subtitle: Text('Rs.${productsList[index].price.toString()}'),
-            trailing: Icon(Icons.arrow_forward_ios),
-            onTap: () {
-              changeScreenReplacement(
-                  context,
-                  DetailPage(
-                    name: productsList[index].name,
-                    image: productsList[index].image,
-                    price: productsList[index].price,
-                    productid: productsList[index].id,
-                    rating: productsList[index].rating,
-                    description: productsList[index].description,
-                  ));
-            },
           ),
         );
       },

@@ -6,8 +6,9 @@ import 'package:foody/models/cartModel.dart';
 import 'package:foody/user/constant/const.dart';
 import 'package:foody/user/helper/screen_navigation.dart';
 import 'package:foody/user/providers/my_provider.dart';
-import 'package:foody/user/screens/cancel_Order.dart';
 import 'package:foody/user/screens/menu.dart';
+import 'package:foody/user/screens/payment.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 class CartPage extends StatefulWidget {
@@ -18,9 +19,7 @@ class CartPage extends StatefulWidget {
 class _CartPageState extends State<CartPage> {
   List<CartModel> cartList = [];
   final db = FirebaseFirestore.instance;
-
-  DateTime datetime = new DateTime.now();
-
+  final DateTime datetime = DateTime.now();
   @override
   Widget Cartitem(
       {@required image,
@@ -286,20 +285,23 @@ class _CartPageState extends State<CartPage> {
                         ? RaisedButton(
                             color: Colors.red[500],
                             onPressed: () {
-                              changeScreenReplacement(
-                                context,
-                                CancelOrder(
-                                  bill: bill,
-                                  cartList: provider.cartList,
-                                ),
-                              );
+                              provider.saveOrder(bill, datetime);
+                              // String doc =
+                              //     await provider.getdocumentid(bill, datetime);
+                              Navigator.pushReplacement(
+                                  context,
+                                  PageTransition(
+                                      child: Payment(bill, datetime),
+                                      type: PageTransitionType
+                                          .leftToRightWithFade));
+
                               setState(() {});
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  'CONTINUE',
+                                  'Place Order',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
@@ -316,7 +318,7 @@ class _CartPageState extends State<CartPage> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  'CONTINUE',
+                                  'Place Order',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,

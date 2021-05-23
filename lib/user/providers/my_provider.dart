@@ -1,15 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-
 import 'package:flutter/material.dart';
 import 'package:foody/models/cartModel.dart';
 import 'package:foody/models/fooditemModel.dart';
+import 'package:foody/user/helper/order_services.dart';
 
 class MyProvider extends ChangeNotifier {
+  OrderServices _orderServices = OrderServices();
   final db = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
   User loggedInUser;
+  CollectionReference cart = FirebaseFirestore.instance.collection('cart');
 
   List<Category> categoryList = [];
   List<Category> newCategoryList = [];
@@ -27,6 +29,7 @@ class MyProvider extends ChangeNotifier {
         image: element.data()['image'],
         rating: element.data()['rating'],
         description: element.data()['description'],
+        comparedPrice: element.data()['comparedPrice'],
       );
 
       newCategoryList.add(category);
@@ -48,11 +51,12 @@ class MyProvider extends ChangeNotifier {
   List<CartModel> newCartList = [];
   CartModel cartModel;
 
-  void addToCart({
+  Future<void> addToCart({
     @required String id,
     String name,
     String image,
     int price,
+    int comparedPrice,
     @required String Uemail,
   }) {
     UserId = Uemail.toString();
@@ -70,29 +74,72 @@ class MyProvider extends ChangeNotifier {
       }
 
       if (!isPresent) {
-        cartModel = CartModel(name: name, image: image, price: price, id: id);
+        cartModel = CartModel(
+            name: name,
+            image: image,
+            price: price,
+            id: id,
+            comparedPrice: comparedPrice);
         newCartList.add(cartModel);
         cartList = newCartList;
+        cart.doc(getCurrentUser()).set({
+          'uid': getCurrentUser(),
+        });
+        return cart.doc(getCurrentUser()).collection('products').add({
+          'productName': name,
+          'productID': id,
+          'productImage': image,
+          'productPrice': price,
+          'productComparedprice': comparedPrice,
+          'quantity': 1,
+        });
       }
     } else {
-      cartModel = CartModel(name: name, image: image, price: price, id: id);
+      cartModel = CartModel(
+          name: name,
+          image: image,
+          price: price,
+          id: id,
+          comparedPrice: comparedPrice);
       newCartList.add(cartModel);
       cartList = newCartList;
+
+      cart.doc(getCurrentUser()).set({
+        'uid': getCurrentUser(),
+      });
+      return cart.doc(getCurrentUser()).collection('products').add({
+        'productName': name,
+        'productID': id,
+        'productImage': image,
+        'productPrice': price,
+        'productComparedprice': comparedPrice,
+        'quantity': 1,
+      });
     }
+    return null;
   }
 
-  get throwcartList {
-    return cartList;
-  }
+  get getcartList => cartList;
 
 //////////////if selected item is already in the cart//////////////////
-  void increaseItemQuantity(CartModel foodItem) {
+  void increaseItemQuantity(CartModel foodItem) async {
     foodItem.incrementQuantity();
+    await db
+        .collection('cart')
+        .doc(getCurrentUser())
+        .collection('products')
+        .where('productID', isEqualTo: foodItem.id)
+        .get()
+        .then((result) {
+      for (DocumentSnapshot document in result.docs) {
+        document.reference.update({'quantity': foodItem.quantity});
+      }
+    });
   }
 
-  void decreaseItemQuantity(CartModel foodItem) {
-    foodItem.decrementQuantity();
-  }
+  // void decreaseItemQuantity(CartModel foodItem) {
+  //   foodItem.decrementQuantity();
+  // }
 
 ////////////////////////////////////////////////
   int total() {
@@ -103,22 +150,55 @@ class MyProvider extends ChangeNotifier {
     return total;
   }
 
-  void deleteitemfromcart(int index) {
+  Future<void> deleteitemfromcart(int index) async {
+    await db
+        .collection('cart')
+        .doc(getCurrentUser())
+        .collection('products')
+        .where('productID', isEqualTo: cartList[index].id)
+        .get()
+        .then((result) {
+      for (DocumentSnapshot document in result.docs) {
+        document.reference.delete();
+      }
+    });
     cartList.removeAt(index);
     notifyListeners();
   }
 
   /////////////////(+ and - )quantity buttons///////////////////////////////
-  void increaseQuantity(int index) {
+  void increaseQuantity(int index) async {
     cartList[index].incrementQuantity();
     notifyListeners();
+    await db
+        .collection('cart')
+        .doc(getCurrentUser())
+        .collection('products')
+        .where('productID', isEqualTo: cartList[index].id)
+        .get()
+        .then((result) {
+      for (DocumentSnapshot document in result.docs) {
+        document.reference.update({'quantity': cartList[index].quantity});
+      }
+    });
   }
 
-  void decreaseQuantity(int index) {
+  void decreaseQuantity(int index) async {
     if (cartList[index].quantity > 1) {
       cartList[index].decrementQuantity();
     }
     notifyListeners();
+    await db
+        .collection('cart')
+        .doc(getCurrentUser())
+        .collection('products')
+        .where('productID', isEqualTo: cartList[index].id)
+        .get()
+        .then((result) {
+      for (DocumentSnapshot document in result.docs) {
+        document.reference.update({'quantity': cartList[index].quantity});
+      }
+    });
   }
 
   int cartlength() {
@@ -126,91 +206,83 @@ class MyProvider extends ChangeNotifier {
   }
 
   ////////////////////cancel order/////////////////////////////////////////
-  void cancelorder() {
-    cartList.clear();
-    newCartList.clear();
-    notifyListeners();
-  }
-
-///////////////////////storing ids and quantities//////////////////////////////////////
-  List<String> cartIDsList = [];
-  List<String> newcartIDsList = [];
-  List<int> cartQuantityList = [];
-  List<int> newcartQuantityList = [];
-  List<String> getCartItemsIDs() {
-    for (int i = 0; i < cartList.length; i++) {
-      newcartIDsList.add(cartList[i].id);
-      cartIDsList = newcartIDsList;
-    }
-    return cartIDsList;
-  }
-
-  List<int> getQuantity() {
-    for (int i = 0; i < cartList.length; i++) {
-      newcartQuantityList.add(cartList[i].quantity);
-      cartQuantityList = newcartQuantityList;
-    }
-    return cartQuantityList;
-  }
-
-  //////////////////////////Add to db///////////////////////////////////////////////
-
-  void addt(int total, DateTime datetime) {
-    cartIDsList = getCartItemsIDs();
-    cartQuantityList = getQuantity();
-    try {
-      db.collection('myOrder').doc().set({
-        'orderby': UserId,
-        'products': cartIDsList,
-        'quantity': cartQuantityList,
-        'total': total,
-        'datetime': datetime,
-        // 'quantity': order.quantity,
-        // 'image': order.image,
-      });
-    } catch (e) {
-      print(e.toString());
-    }
-  }
-
-///////////////////////////kitchen data//////////////////////////////////////////////
-
-  void addkt(int total, DateTime datetime) {
-    cartIDsList = getCartItemsIDs();
-    cartQuantityList = getQuantity();
-    try {
-      db.collection('kitchen').doc().set({
-        'orderby': UserId,
-        'products': cartIDsList,
-        'quantity': cartQuantityList,
-        'total': total,
-        'datetime': datetime,
-        // 'quantity': order.quantity,
-        // 'image': order.image,
-      });
-    } catch (e) {
-      print(e.toString());
-    }
-    cartIDsList.clear();
-    cartQuantityList.clear();
-    cartList.clear();
-    newCartList.clear();
-    newcartQuantityList.clear();
-    newcartIDsList.clear();
-  }
-
-  ////////////user id//////////////////////////////////////////
-  // String getCurrentUser() {
-  //   try {
-  //     final user = _auth.currentUser;
-  //     if (user != null) {
-  //       loggedInUser = user;
-  //     }
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  //   return loggedInUser.uid;
+  // void cancelorder() {
+  //   cartList.clear();
+  //   newCartList.clear();
+  //   notifyListeners();
+  //   cart.doc(getCurrentUser()).delete();
   // }
+
+  Future<void> checkData() async {
+    final snapshot =
+        await cart.doc(getCurrentUser()).collection('products').get();
+    if (snapshot.docs.length == 0) {
+      cart.doc(getCurrentUser()).delete();
+    }
+  }
+
+  Future<void> deleteCart() async {
+    final result = await cart
+        .doc(getCurrentUser())
+        .collection('products')
+        .get()
+        .then((snapshot) {
+      for (DocumentSnapshot ds in snapshot.docs) {
+        ds.reference.delete();
+      }
+    });
+  }
+
+  saveOrder(int total, DateTime dateTime) async {
+    List listCart = [];
+    List _newlistCart = [];
+    QuerySnapshot snapshot =
+        await cart.doc(getCurrentUser()).collection('products').get();
+    if (snapshot == null) {
+      return null;
+    }
+    snapshot.docs.forEach((doc) {
+      if (!_newlistCart.contains(doc.data())) {
+        _newlistCart.add(doc.data());
+        listCart = _newlistCart;
+        notifyListeners();
+      }
+    });
+
+    _orderServices.saveOrder({
+      'products': listCart,
+      'userId': getCurrentUser(),
+      'userEmail': UserId,
+      'total': total,
+      'timestamp': dateTime.toString(),
+      'orderStatus': 'Ordered',
+      'payment': {
+        'orderby': '',
+        'method': '',
+        'total': '',
+        'pNo': '',
+      },
+    }).then((value) {
+      deleteCart().then((value) {
+        checkData();
+      });
+    });
+    cartList.clear();
+    newCartList.clear();
+  }
+
+  //////////user id//////////////////////////////////////////
+  String getCurrentUser() {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        loggedInUser = user;
+      }
+    } catch (e) {
+      print(e);
+    }
+    return loggedInUser.uid;
+  }
 
   String getUserMail() {
     try {
@@ -224,42 +296,30 @@ class MyProvider extends ChangeNotifier {
     return loggedInUser.email;
   }
 
-///////////payment db//////////////////////////////
+/////////////////////////////payment db///////////////////////////////////////
 
-  Future<String> getdocumentid(DateTime datetime, String useremail) async {
-    String doc;
+  Future<void> addpayment(int bill, DateTime datetime, String method,
+      String name, String no) async {
     await db
-        .collection('myOrder')
-        .where('orderby', isEqualTo: useremail)
-        .where('datetime', isEqualTo: datetime)
+        .collection('diningOrder')
+        .where('userId', isEqualTo: getCurrentUser())
+        .where('total', isEqualTo: bill)
+        .where('timestamp', isEqualTo: datetime.toString())
         .get()
         .then((result) {
       for (DocumentSnapshot document in result.docs) {
-        doc = document.reference.id;
+        document.reference.update({
+          'payment': {
+            'orderby': name,
+            'method': method,
+            'total': bill,
+            'pNo': no,
+          }
+        });
       }
       print('--------------------------------------------------------------');
-      print(doc);
+      print(bill);
+      print(datetime.toString());
     });
-    return doc;
-  }
-
-  Future<void> addpayment(
-      int total, String docc, String method, String name, String no) async {
-    // print('${order.name}');
-    //QuerySnapshot query = await db.collection('category').get();
-    try {
-      await db.collection('myOrder').doc(docc).collection('payment').doc().set({
-        'orderby': name,
-        'method': method,
-        'total': total,
-        'pNo': no,
-        //   db.collection('myOrder').doc(id).collection('Payment').doc().set({
-
-        // 'quantity': order.quantity,
-        // 'image': order.image,
-      });
-    } catch (e) {
-      print(e.toString());
-    }
   }
 }

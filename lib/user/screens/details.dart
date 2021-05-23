@@ -12,8 +12,9 @@ import 'package:toast/toast.dart';
 class DetailPage extends StatefulWidget {
   final String image;
   final int price;
+  final int comparedPrice;
   final String name;
-  double rating;
+  final double rating;
   final String productid;
   final String description;
 
@@ -24,6 +25,7 @@ class DetailPage extends StatefulWidget {
     @required this.rating,
     @required this.productid,
     @required this.description,
+    @required this.comparedPrice,
   });
   @override
   _DetailPageState createState() => _DetailPageState();
@@ -166,8 +168,8 @@ class _DetailPageState extends State<DetailPage> {
                                     id: widget.productid,
                                     name: widget.name,
                                     price: widget.price,
+                                    comparedPrice: widget.comparedPrice,
                                     image: widget.image,
-                                    //quantity: quantity,
                                     Uemail: Useremail,
                                   );
                                   final snackBar = SnackBar(

@@ -5,10 +5,14 @@ import 'package:foody/models/fooditemModel.dart';
 import 'package:foody/user/constant/const.dart';
 import 'package:foody/user/helper/screen_navigation.dart';
 import 'package:foody/user/login/login.dart';
+import 'package:foody/user/providers/auth.dart';
 import 'package:foody/user/providers/categoryprovider.dart';
 import 'package:foody/user/providers/my_provider.dart';
 import 'package:foody/user/screens/cart.dart';
 import 'package:foody/user/screens/featured_products.dart';
+import 'package:foody/user/screens/order_screen.dart';
+import 'package:foody/user/welcome/welcome.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
@@ -37,7 +41,8 @@ class _MenuState extends State<Menu> {
   Widget build(BuildContext context) {
     final MyProvider provider2 = Provider.of<MyProvider>(context);
     final CategoryProvider provider = Provider.of<CategoryProvider>(context);
-
+    var userDetails = Provider.of<Authentication>(context);
+    userDetails.getUsereDtails();
     listcategory = provider.categories;
 
     int length = provider2.cartList.length;
@@ -48,44 +53,49 @@ class _MenuState extends State<Menu> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              UserAccountsDrawerHeader(
-                accountName: Text(
-                  'Rana Awais' ?? 'Name Loading',
-                  style: TextStyle(fontSize: 21),
-                ),
-                accountEmail: Padding(
-                  padding: const EdgeInsets.only(top: 4.0),
-                  child: Text(
-                    '$user_email' ?? 'Email Loading',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ),
-              ),
+              userDetails.snapshot == null
+                  ? UserAccountsDrawerHeader(
+                      accountName: Text(
+                        'Name Loading..',
+                        style: TextStyle(fontSize: 21),
+                      ),
+                      accountEmail: Padding(
+                        padding: const EdgeInsets.only(top: 4.0),
+                        child: Text(
+                          'Email Loading..',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    )
+                  : UserAccountsDrawerHeader(
+                      accountName: Text(
+                        userDetails.snapshot.data()['name'],
+                        style: TextStyle(fontSize: 21),
+                      ),
+                      accountEmail: Padding(
+                        padding: const EdgeInsets.only(top: 4.0),
+                        child: Text(
+                          userDetails.snapshot.data()['email'],
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ),
               GestureDetector(
                 onTap: () {
-                  //changeScreen(context, EmployeeProfile());
+                  changeScreen(context, CartPage());
                 },
                 child: drawerItem(
-                  icon: Icons.person,
-                  name: "Employees",
+                  icon: Icons.shopping_cart_outlined,
+                  name: "My Cart",
                 ),
               ),
               GestureDetector(
                 onTap: () {
-                  //changeScreen(context, ShowOrders());
+                  changeScreen(context, MyOrders());
                 },
                 child: drawerItem(
                   icon: Icons.card_travel,
-                  name: "Orders",
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  //changeScreen(context, Menu_Items());
-                },
-                child: drawerItem(
-                  icon: Icons.fastfood,
-                  name: "Food Items",
+                  name: "My Orders",
                 ),
               ),
               GestureDetector(
@@ -101,13 +111,13 @@ class _MenuState extends State<Menu> {
                 thickness: 2,
                 color: black,
               ),
-              // GestureDetector(
-              //   onTap: () {},
-              //   child: drawerItem(
-              //     icon: Icons.lock,
-              //     name: "Change Password",
-              //   ),
-              // ),
+              GestureDetector(
+                onTap: () {},
+                child: drawerItem(
+                  icon: Icons.lock,
+                  name: "Change Password",
+                ),
+              ),
               GestureDetector(
                 onTap: () {
                   Alert(
@@ -140,7 +150,7 @@ class _MenuState extends State<Menu> {
                             if (formkey.currentState.validate()) {
                               setState(() {
                                 _auth.signOut();
-                                changeScreenReplacement(context, Login());
+                                changeScreenReplacement(context, Welcome());
                               });
                             } else {
                               return null;
@@ -174,7 +184,11 @@ class _MenuState extends State<Menu> {
               IconButton(
                   icon: Icon(Icons.shopping_cart),
                   onPressed: () {
-                    changeScreenReplacement(context, CartPage());
+                    Navigator.pushReplacement(
+                        context,
+                        PageTransition(
+                            child: CartPage(),
+                            type: PageTransitionType.leftToRightWithFade));
                   }),
               Positioned(
                 top: 4,
@@ -193,11 +207,8 @@ class _MenuState extends State<Menu> {
         ],
       ),
       resizeToAvoidBottomInset: false,
-      // resizeToAvoidBottomPadding: true,
-
       body: Container(
-        color: Colors.white,
-        // physics: NeverScrollableScrollPhysics(),
+        // color: Colors.white,
         child: Column(children: [
           Container(
             child: Container(
@@ -210,7 +221,7 @@ class _MenuState extends State<Menu> {
             ),
           ),
           ListTile(
-            tileColor: Colors.grey[200],
+            tileColor: Colors.grey[300],
             title: Center(
               child: Text(
                 'MENU',

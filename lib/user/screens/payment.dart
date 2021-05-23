@@ -1,18 +1,16 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:foody/user/constant/const.dart';
 import 'package:foody/user/helper/screen_navigation.dart';
 import 'package:foody/user/providers/my_provider.dart';
-import 'package:foody/user/screens/menu.dart';
 import 'package:foody/user/screens/thankuPage.dart';
 import 'package:provider/provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 class Payment extends StatefulWidget {
-  final int payment;
-  String doc;
-  Payment(this.payment, this.doc);
+  final int bill;
+  final DateTime datetime;
+  Payment(this.bill, this.datetime);
   @override
   _PaymentState createState() => _PaymentState();
 }
@@ -71,12 +69,11 @@ class _PaymentState extends State<Payment> {
         appBar: AppBar(
           elevation: 0.0,
           backgroundColor: kcolor2, //Color(0xff213777),
-          title: Center(
-            child: Text(
-              'PAYMENT',
-              style: kappbarstyle,
-            ),
+          title: Text(
+            'PAYMENT',
+            style: kappbarstyle,
           ),
+          centerTitle: true,
         ),
         body: Container(
           color: Colors.white,
@@ -99,7 +96,7 @@ class _PaymentState extends State<Payment> {
                             fontSize: 20),
                       ),
                       Text(
-                        'Rs.${widget.payment.toString()}',
+                        'Rs.${widget.bill.toString()}',
                         style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w300,
@@ -170,8 +167,8 @@ class _PaymentState extends State<Payment> {
                                         setState(() {
                                           method = 'EasyPaisa';
                                           provider.addpayment(
-                                              widget.payment,
-                                              widget.doc,
+                                              widget.bill,
+                                              widget.datetime,
                                               method,
                                               userName,
                                               pNumber);
@@ -250,10 +247,10 @@ class _PaymentState extends State<Payment> {
                                       onPressed: () {
                                         if (formkey.currentState.validate()) {
                                           setState(() {
-                                            method = 'jazzCash';
+                                            method = 'JazzCash';
                                             provider.addpayment(
-                                                widget.payment,
-                                                widget.doc,
+                                                widget.bill,
+                                                widget.datetime,
                                                 method,
                                                 userName,
                                                 pNumber);
@@ -308,16 +305,18 @@ class _PaymentState extends State<Payment> {
                                   buttons: [
                                     DialogButton(
                                       onPressed: () {
-                                        method = 'by hand';
-                                        provider.addpayment(
-                                            widget.payment,
-                                            widget.doc,
-                                            method,
-                                            userName = 'n/a',
-                                            pNumber = 'n/a');
+                                        setState(() {
+                                          method = 'By hand';
+                                          provider.addpayment(
+                                              widget.bill,
+                                              widget.datetime,
+                                              method,
+                                              userName = 'Not Available',
+                                              pNumber = 'Not Available');
 
-                                        Navigator.pop(context);
-                                        btnPressed = true;
+                                          Navigator.pop(context);
+                                          btnPressed = true;
+                                        });
                                       },
                                       child: Text(
                                         "Got It",
