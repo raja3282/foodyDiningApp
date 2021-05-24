@@ -35,7 +35,7 @@ class Foody extends StatelessWidget {
           primaryColor: Colors.blueGrey,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        home: KitchenOrders(),
+        home: Splash(),
       ),
     );
   }

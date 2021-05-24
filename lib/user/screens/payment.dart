@@ -9,7 +9,7 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 
 class Payment extends StatefulWidget {
   final int bill;
-  final DateTime datetime;
+  final String datetime;
   Payment(this.bill, this.datetime);
   @override
   _PaymentState createState() => _PaymentState();

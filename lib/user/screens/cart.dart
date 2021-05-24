@@ -7,6 +7,7 @@ import 'package:foody/user/constant/const.dart';
 import 'package:foody/user/helper/screen_navigation.dart';
 import 'package:foody/user/providers/my_provider.dart';
 import 'package:foody/user/screens/menu.dart';
+import 'package:foody/user/screens/order_screen.dart';
 import 'package:foody/user/screens/payment.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
@@ -291,7 +292,7 @@ class _CartPageState extends State<CartPage> {
                               Navigator.pushReplacement(
                                   context,
                                   PageTransition(
-                                      child: Payment(bill, datetime),
+                                      child: MyOrders(),
                                       type: PageTransitionType
                                           .leftToRightWithFade));
 

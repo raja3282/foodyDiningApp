@@ -248,10 +248,12 @@ class MyProvider extends ChangeNotifier {
         notifyListeners();
       }
     });
-
+    DocumentSnapshot snapshot2 =
+        await db.collection('diningUsers').doc(_auth.currentUser.email).get();
     _orderServices.saveOrder({
       'products': listCart,
       'userId': getCurrentUser(),
+      'TableNumber': snapshot2.data()['name'],
       'userEmail': UserId,
       'total': total,
       'timestamp': dateTime.toString(),
@@ -298,13 +300,13 @@ class MyProvider extends ChangeNotifier {
 
 /////////////////////////////payment db///////////////////////////////////////
 
-  Future<void> addpayment(int bill, DateTime datetime, String method,
-      String name, String no) async {
+  Future<void> addpayment(
+      int bill, String datetime, String method, String name, String no) async {
     await db
         .collection('diningOrder')
         .where('userId', isEqualTo: getCurrentUser())
         .where('total', isEqualTo: bill)
-        .where('timestamp', isEqualTo: datetime.toString())
+        .where('timestamp', isEqualTo: datetime)
         .get()
         .then((result) {
       for (DocumentSnapshot document in result.docs) {

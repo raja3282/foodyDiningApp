@@ -7,7 +7,9 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foody/user/constant/const.dart';
 import 'package:foody/user/helper/order_services.dart';
 import 'package:foody/user/providers/order_provider.dart';
+import 'package:foody/user/screens/payment.dart';
 import 'package:intl/intl.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 class MyOrders extends StatefulWidget {
@@ -161,7 +163,7 @@ class _MyOrdersState extends State<MyOrders> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(
-                                    'Table : ${document.data()['userEmail']}',
+                                    'Table Number : ${document.data()['TableNumber']}',
                                     style: TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold),
@@ -257,7 +259,8 @@ class _MyOrdersState extends State<MyOrders> {
                                         width:
                                             MediaQuery.of(context).size.width,
                                         child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
+                                          padding: const EdgeInsets.fromLTRB(
+                                              40, 8, 40, 8),
                                           child: FlatButton(
                                             color: Colors.blueGrey,
                                             child: Text(
@@ -278,7 +281,53 @@ class _MyOrdersState extends State<MyOrders> {
                                           ),
                                         ),
                                       )
-                                    : Container(),
+                                    : document.data()['orderStatus'] ==
+                                            'Payment Pending'
+                                        ? Container(
+                                            color: Colors.grey[300],
+                                            height: 50,
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      40, 8, 40, 8),
+                                              child: FlatButton(
+                                                color: Colors.green,
+                                                child: Text(
+                                                  'Add Payment',
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                ),
+                                                onPressed: () {
+                                                  EasyLoading.show(
+                                                      status:
+                                                          'Updating status');
+                                                  _OrderServices
+                                                          .updateOrderStatus(
+                                                              document.id,
+                                                              'Completed')
+                                                      .then((value) {
+                                                    EasyLoading.showSuccess(
+                                                        'Updated successfully');
+                                                  });
+                                                  Navigator.pushReplacement(
+                                                      context,
+                                                      PageTransition(
+                                                          child: Payment(
+                                                              document.data()[
+                                                                  'total'],
+                                                              document.data()[
+                                                                  'timestamp']),
+                                                          type: PageTransitionType
+                                                              .leftToRightWithFade));
+                                                  setState(() {});
+                                                },
+                                              ),
+                                            ),
+                                          )
+                                        : Container(),
                             Divider(
                               height: 3,
                               color: Colors.grey,

@@ -22,10 +22,11 @@ class _KitchenOrdersState extends State<KitchenOrders> {
   int tag = 0;
   List<String> options = [
     'All Orders',
-    'Ordered',
     'Accepted',
     'Being Prepared',
     'Ready To Serve',
+    'Served',
+    'Payment Pending',
     'Completed',
     'Rejected',
     'Cancelled'
@@ -161,7 +162,7 @@ class _KitchenOrdersState extends State<KitchenOrders> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(
-                                    'Table : ${document.data()['userEmail']}',
+                                    'Table Number : ${document.data()['TableNumber']}',
                                     style: TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold),
@@ -258,7 +259,8 @@ class _KitchenOrdersState extends State<KitchenOrders> {
                                         width:
                                             MediaQuery.of(context).size.width,
                                         child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
+                                          padding: const EdgeInsets.fromLTRB(
+                                              40, 8, 40, 8),
                                           child: FlatButton(
                                             color: Colors.orangeAccent,
                                             child: Text(
@@ -290,11 +292,12 @@ class _KitchenOrdersState extends State<KitchenOrders> {
                                                 .width,
                                             child: Padding(
                                               padding:
-                                                  const EdgeInsets.all(8.0),
+                                                  const EdgeInsets.fromLTRB(
+                                                      40, 8, 40, 8),
                                               child: FlatButton(
                                                 color: Colors.green,
                                                 child: Text(
-                                                  'Completed',
+                                                  'Served',
                                                   style: TextStyle(
                                                       color: Colors.white),
                                                 ),
@@ -305,7 +308,7 @@ class _KitchenOrdersState extends State<KitchenOrders> {
                                                   _OrderServices
                                                           .updateOrderStatus(
                                                               document.id,
-                                                              'Completed')
+                                                              'Payment Pending')
                                                       .then((value) {
                                                     EasyLoading.showSuccess(
                                                         'Updated successfully');
